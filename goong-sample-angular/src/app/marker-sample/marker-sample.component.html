@@ -1,0 +1,23 @@
+<div id='map'>
+  <div class="goong-map">
+    <div>
+      <h1>Angular Map</h1>
+    </div>
+    <div class="goong-map-nav-bar">
+      <input type="text" [(ngModel)]="lng">
+      <label for="long">Lng</label>
+      <input type="text" [(ngModel)]="lat">
+      <label for="lat">Lat</label>
+      <button (click)="addMarker()">Thêm Marker</button>
+    </div>
+  </div>
+  <div class="goong-map-side-bar">
+    <div class="goong-map-coordinates" *ngFor="let location of locations">
+      <div class="goong-map-locations">
+        <h3> Lng:{{location.coord[0]}} Lat: {{location.coord[1]}}</h3>
+      </div>
+      <button class="edit-btn" (click)="handleEdit(location)">Sửa</button>
+      <button class="delete-btn" (click)="handleDelete(location)">Xoá</button>
+    </div>
+  </div>
+</div>

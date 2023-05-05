@@ -1,0 +1,168 @@
+.App {
+  text-align: center;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+}
+
+#map {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 100%;
+}
+
+.goong-map {
+  display: flex;
+  justify-content: space-between;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  background-color: white;
+  text-align: right;
+  margin: auto;
+  padding-right: 25px;
+  padding-left: 25px;
+  border-bottom: 0.5px solid rgb(221, 221, 221);
+  z-index: 999;
+  height: 70px;
+  align-items: center;
+}
+
+.goong-map-input {
+  width: 150px;
+  height: 30px;
+  margin-right: 10px;
+  margin-left: 10px;
+  box-sizing: border-box;
+}
+
+.goong-map-sideBar {
+  position: fixed;
+  top: 70px;
+  right: 0;
+  bottom: 0;
+  background-color: white;
+  width: 350px;
+  z-index: 998;
+  overflow-y: scroll;
+}
+
+.goong-map-coordinates {
+  width: 300px;
+}
+
+.goong-map-locations {
+  cursor: pointer;
+}
+
+.delete-btn.btn {
+  width: 50px;
+  background-color: red;
+  border: 1px solid red;
+  margin-top: 10px;
+}
+
+.edit-btn.btn {
+  width: 50px;
+  background-color: orange;
+  border: 1px solid orange;
+  margin-top: 10px;
+  margin-right: 10px;
+}
+
+.btn {
+  background-color: rgb(54, 148, 255);
+  border: 1px solid rgb(54, 148, 255);
+  width: 100px;
+  height: 30px;
+  border-radius: 5px;
+  color: white;
+  margin-left: 10px;
+}
+
+input {
+  margin-top: 10px;
+  border: 1px solid rgb(125, 192, 255);
+  width: 200px;
+  height: 25px;
+  border-radius: 5px;
+  outline: none;
+  padding-left: 10px;
+  margin-bottom: 10px;
+}
+
+.goong-map-direction {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.goong-map-search {
+  display: flex;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  background-color: white;
+  text-align: right;
+  margin: auto;
+  padding-right: 25px;
+  padding-left: 25px;
+  border-bottom: 0.5px solid rgb(221, 221, 221);
+  z-index: 999;
+  height: 70px;
+  align-items: center;
+  gap: 10px;
+  justify-content: space-between;
+}
+
+.side-bar {
+  display: flex;
+  margin-left: 20px;
+}
+
+button:hover {
+  cursor: pointer;
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+.goong-direction {
+  display: flex;
+  flex-direction: column;
+  position: fixed;
+  z-index: 999;
+  background-color: rgb(0, 60, 129);
+  padding-top: 10px;
+}
+
+.goong-locations {
+  width: 350px;
+  height: 30px;
+  margin-top: 0px;
+}
+
+#geocoder {
+  z-index: 1;
+  margin: 20px;
+}
+
+.goongjs-ctrl-geocoder {
+  min-width: 100%;
+}
+
+h1 {
+  font-family: Arial, Helvetica, sans-serif;
+  font-weight: 500;
+}
+
+h3 {
+  font-family: Arial, Helvetica, sans-serif;
+  font-weight: 500;
+}

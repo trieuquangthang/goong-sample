@@ -1,0 +1,25 @@
+{
+  "name": "goong-sample-vue3",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@goongmaps/goong-geocoder": "^1.1.1",
+    "@goongmaps/goong-js": "^1.0.9",
+    "@mapbox/polyline": "^1.1.1",
+    "axios": "^1.3.4",
+    "dotenv": "^16.0.3",
+    "events": "^3.3.0",
+    "vue": "^3.2.47",
+    "vue-axios": "^3.5.2",
+    "vue-router": "^4.1.6"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^4.0.0",
+    "vite": "^4.1.4"
+  }
+}

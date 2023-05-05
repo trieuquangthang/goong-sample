@@ -1,0 +1,12 @@
+<div id='map'>
+  <div class="goong-map">
+    <div>
+      <h1>Angular Map</h1>
+    </div>
+    <div class="goong-map-search">
+      <input type="text" [(ngModel)]="startPoint" placeholder="Điểm bắt đầu">
+      <input type="text" name="lat" [(ngModel)]="endPoint" placeholder="Điểm kết thúc">
+      <button (click)="handleSearch()">Tìm kiếm</button>
+    </div>
+  </div>
+</div>
