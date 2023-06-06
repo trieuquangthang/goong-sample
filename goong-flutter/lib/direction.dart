@@ -7,7 +7,6 @@ import 'dart:convert';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 
-
 void main() {
   runApp(const MaterialApp(debugShowCheckedModeBanner: false, home: FullMap()));
 }
@@ -23,7 +22,7 @@ class FullMapState extends State<FullMap> {
   MapboxMap? mapboxMap;
   CircleAnnotationManager? _circleAnnotationManagerStart;
   CircleAnnotationManager? _circleAnnotationManagerEnd;
-  _onMapCreated(MapboxMap mapboxMap) async{
+  _onMapCreated(MapboxMap mapboxMap) async {
     this.mapboxMap = mapboxMap;
   }
 
@@ -53,7 +52,7 @@ class FullMapState extends State<FullMap> {
   Future<void> getStart(String input) async {
     try {
       final url = Uri.parse(
-          'https://rsapi.goong.io/Place/AutoComplete?api_key=qsy0OS8PcbxbmdNzOn8Gy0mSEdg4trKTgtcUD5DN&input=$input');
+          'https://rsapi.goong.io/Place/AutoComplete?api_key={YOUR_API_KEY}&input=$input');
       var response = await http.get(url);
       setState(() {
         final jsonResponse = jsonDecode(response.body);
@@ -84,53 +83,64 @@ class FullMapState extends State<FullMap> {
               SizedBox(
                 width: 330,
                 height: 30,
-                child: Text(coordinate['description'],softWrap: true,
+                child: Text(
+                  coordinate['description'],
+                  softWrap: true,
                 ),
               )
-            ],),onTap: ()async{
-          setState(() {
-            isShowStart = false;
-
-          });
-
-          final url = Uri.parse(
-              'https://rsapi.goong.io/geocode?address=${coordinate['description']}&api_key=qsy0OS8PcbxbmdNzOn8Gy0mSEdg4trKTgtcUD5DN');
-          var response = await http.get(url);
-          final jsonResponse = jsonDecode(response.body);
-          startDetails = jsonResponse['results'] as List<dynamic>;
-
-          // ignore: no_leading_underscores_for_local_identifiers
-          mapboxMap?.setCamera(CameraOptions(
-              center: Point(coordinates: Position(startDetails[index]['geometry']['location']['lng'],startDetails[index]['geometry']['location']['lat'])).toJson(),
-              zoom: 12.0));
-
-          mapboxMap?.flyTo(
-              CameraOptions(
-                  anchor: ScreenCoordinate(x: 0, y: 0),
-                  zoom: 15,
-                  bearing: 0,
-                  pitch: 0),
-              MapAnimationOptions(duration: 2000, startDelay: 0));
-          mapboxMap?.annotations.createCircleAnnotationManager().then((value) async {
+            ],
+          ),
+          onTap: () async {
             setState(() {
-              _circleAnnotationManagerStart = value; // Store the reference to the circle annotation manager
-             lngStart = startDetails[index]['geometry']['location']['lng'];
-              latStart = startDetails[index]['geometry']['location']['lat'];
+              isShowStart = false;
             });
-            var pointAnnotationStart = value;
-            value.create(CircleAnnotationOptions(
-              geometry: Point(
-                  coordinates: Position(
+
+            final url = Uri.parse(
+                'https://rsapi.goong.io/geocode?address=${coordinate['description']}&api_key={YOUR_API_KEY}');
+            var response = await http.get(url);
+            final jsonResponse = jsonDecode(response.body);
+            startDetails = jsonResponse['results'] as List<dynamic>;
+
+            // ignore: no_leading_underscores_for_local_identifiers
+            mapboxMap?.setCamera(CameraOptions(
+                center: Point(
+                        coordinates: Position(
+                            startDetails[index]['geometry']['location']['lng'],
+                            startDetails[index]['geometry']['location']['lat']))
+                    .toJson(),
+                zoom: 12.0));
+
+            mapboxMap?.flyTo(
+                CameraOptions(
+                    anchor: ScreenCoordinate(x: 0, y: 0),
+                    zoom: 15,
+                    bearing: 0,
+                    pitch: 0),
+                MapAnimationOptions(duration: 2000, startDelay: 0));
+            mapboxMap?.annotations
+                .createCircleAnnotationManager()
+                .then((value) async {
+              setState(() {
+                _circleAnnotationManagerStart =
+                    value; // Store the reference to the circle annotation manager
+                lngStart = startDetails[index]['geometry']['location']['lng'];
+                latStart = startDetails[index]['geometry']['location']['lat'];
+              });
+              var pointAnnotationStart = value;
+              value.create(
+                CircleAnnotationOptions(
+                  geometry: Point(
+                      coordinates: Position(
                     startDetails[index]['geometry']['location']['lng'],
                     startDetails[index]['geometry']['location']['lat'],
                   )).toJson(),
-              circleColor: Colors.blue.value,
-              circleRadius: 12.0,),
-            );
-          });
-          _searchStart.text = coordinate['description'];
-
-        },
+                  circleColor: Colors.blue.value,
+                  circleRadius: 12.0,
+                ),
+              );
+            });
+            _searchStart.text = coordinate['description'];
+          },
         );
       },
     );
@@ -139,14 +149,13 @@ class FullMapState extends State<FullMap> {
   Future<void> getEnd(String input) async {
     try {
       final url = Uri.parse(
-          'https://rsapi.goong.io/Place/AutoComplete?api_key=qsy0OS8PcbxbmdNzOn8Gy0mSEdg4trKTgtcUD5DN&input=$input');
+          'https://rsapi.goong.io/Place/AutoComplete?api_key={YOUR_API_KEY}&input=$input');
       var response = await http.get(url);
       setState(() {
         final jsonResponse = jsonDecode(response.body);
         endPlace = jsonResponse['predictions'] as List<dynamic>;
         _circleAnnotationManagerEnd?.deleteAll();
         isShowEnd = true;
-
       });
     } catch (e) {
       // ignore: avoid_print
@@ -160,35 +169,42 @@ class FullMapState extends State<FullMap> {
       itemBuilder: (context, index) {
         final coordinate = endPlace[index];
 
-          return ListTile(
-            subtitle: Row(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                const Icon(
-                  Icons.location_on_outlined,
-                  color: Colors.blue,
+        return ListTile(
+          subtitle: Row(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              const Icon(
+                Icons.location_on_outlined,
+                color: Colors.blue,
+              ),
+              SizedBox(
+                width: 330,
+                height: 30,
+                child: Text(
+                  coordinate['description'],
+                  softWrap: true,
                 ),
-                SizedBox(
-                  width: 330,
-                  height: 30,
-                  child: Text(coordinate['description'],softWrap: true,
-                  ),
-                )
-              ],),onTap: ()async{
+              )
+            ],
+          ),
+          onTap: () async {
             setState(() {
               isShowEnd = false;
-
             });
 
             final url = Uri.parse(
-                'https://rsapi.goong.io/geocode?address=${coordinate['description']}&api_key=qsy0OS8PcbxbmdNzOn8Gy0mSEdg4trKTgtcUD5DN');
+                'https://rsapi.goong.io/geocode?address=${coordinate['description']}&api_key={YOUR_API_KEY}');
             var response = await http.get(url);
             final jsonResponse = jsonDecode(response.body);
             endDetails = jsonResponse['results'] as List<dynamic>;
 
             // ignore: no_leading_underscores_for_local_identifiers
             mapboxMap?.setCamera(CameraOptions(
-                center: Point(coordinates: Position(endDetails[index]['geometry']['location']['lng'],endDetails[index]['geometry']['location']['lat'])).toJson(),
+                center: Point(
+                        coordinates: Position(
+                            endDetails[index]['geometry']['location']['lng'],
+                            endDetails[index]['geometry']['location']['lat']))
+                    .toJson(),
                 zoom: 12.0));
 
             mapboxMap?.flyTo(
@@ -198,56 +214,63 @@ class FullMapState extends State<FullMap> {
                     bearing: 0,
                     pitch: 0),
                 MapAnimationOptions(duration: 2000, startDelay: 0));
-            mapboxMap?.annotations.createCircleAnnotationManager().then((value) async {
+            mapboxMap?.annotations
+                .createCircleAnnotationManager()
+                .then((value) async {
               setState(() {
-                _circleAnnotationManagerEnd = value; // Store the reference to the circle annotation manager
+                _circleAnnotationManagerEnd =
+                    value; // Store the reference to the circle annotation manager
                 lngEnd = endDetails[index]['geometry']['location']['lng'];
                 latEnd = endDetails[index]['geometry']['location']['lat'];
               });
 
-              value.create(CircleAnnotationOptions(
-                geometry: Point(
-                    coordinates: Position(
-                      endDetails[index]['geometry']['location']['lng'],
-                      endDetails[index]['geometry']['location']['lat'],
-                    )).toJson(),
-                circleColor: Colors.red.value,
-                circleRadius: 12.0,),
+              value.create(
+                CircleAnnotationOptions(
+                  geometry: Point(
+                      coordinates: Position(
+                    endDetails[index]['geometry']['location']['lng'],
+                    endDetails[index]['geometry']['location']['lat'],
+                  )).toJson(),
+                  circleColor: Colors.red.value,
+                  circleRadius: 12.0,
+                ),
               );
             });
             _searchEnd.text = coordinate['description'];
           },
-          );
-
+        );
       },
     );
   }
 
-void getZoom() async{
+  void getZoom() async {
     mapboxMap?.flyTo(
-      CameraOptions(
-        zoom: 13.0,
-      ), MapAnimationOptions(duration: 2000, startDelay: 0)
-    );
-}
+        CameraOptions(
+          zoom: 13.0,
+        ),
+        MapAnimationOptions(duration: 2000, startDelay: 0));
+  }
 
-   void  _fetchData() async{
-    if(latStart != null && lngStart!= null && latEnd != null && lngEnd != null){
+  void _fetchData() async {
+    if (latStart != null &&
+        lngStart != null &&
+        latEnd != null &&
+        lngEnd != null) {
       final url = Uri.parse(
-          'https://rsapi.goong.io/Direction?origin=$latStart,$lngStart&destination=$latEnd,$lngEnd&vehicle=bike&api_key=qsy0OS8PcbxbmdNzOn8Gy0mSEdg4trKTgtcUD5DN');
+          'https://rsapi.goong.io/Direction?origin=$latStart,$lngStart&destination=$latEnd,$lngEnd&vehicle=bike&api_key={YOUR_API_KEY}');
 
       mapboxMap?.setBounds(CameraBoundsOptions(
           bounds: CoordinateBounds(
               southwest: Point(
                   coordinates: Position(
-                    lngStart!,
-                    latStart!,
-                  )).toJson(),
+                lngStart!,
+                latStart!,
+              )).toJson(),
               northeast: Point(
                   coordinates: Position(
-                    lngEnd!,
-                    latEnd!,
-                  )).toJson(),
+                lngEnd!,
+                latEnd!,
+              )).toJson(),
               infiniteBounds: true),
           maxZoom: 13,
           minZoom: 0,
@@ -256,14 +279,14 @@ void getZoom() async{
 
       var response = await http.get(url);
       final jsonResponse = jsonDecode(response.body);
-      var route  = jsonResponse['routes'][0]['overview_polyline']['points'];
+      var route = jsonResponse['routes'][0]['overview_polyline']['points'];
       duration = jsonResponse['routes'][0]['legs'][0]['duration']['text'];
       distance = jsonResponse['routes'][0]['legs'][0]['distance']['text'];
       List<PointLatLng> result = polylinePoints.decodePolyline(route);
-      List<List<double>> coordinates = result.map((point) => [point.longitude, point.latitude]).toList();
+      List<List<double>> coordinates =
+          result.map((point) => [point.longitude, point.latitude]).toList();
 
-      String geojson =
-      '''{
+      String geojson = '''{
       "type": "FeatureCollection",
       "features": [
         {
@@ -279,7 +302,8 @@ void getZoom() async{
       ]
     }''';
 
-      await mapboxMap?.style.addSource(GeoJsonSource(id: "line", data: geojson));
+      await mapboxMap?.style
+          .addSource(GeoJsonSource(id: "line", data: geojson));
       var lineLayerJson = """{
      "type":"line",
      "id":"line_layer",
@@ -299,7 +323,7 @@ void getZoom() async{
     });
   }
 
-  void removeLayer() async{
+  void removeLayer() async {
     await mapboxMap?.style.removeStyleLayer("line_layer");
     await mapboxMap?.style.removeStyleSource("line");
   }
@@ -315,18 +339,17 @@ void getZoom() async{
             SizedBox(
               child: MapWidget(
                 key: const ValueKey("mapWidget"),
-                resourceOptions: ResourceOptions(
-                    accessToken:
-                        "pk.eyJ1IjoibG9uZ25naGllbSIsImEiOiJjbGhyMnhwdGEyOXNmM3FzMXA5Z3U1c2VsIn0.6fGbge-wVwxzhgKFAu8pkg"),
+                resourceOptions:
+                    ResourceOptions(accessToken: "{PUBLIC_TOKENS}"),
                 cameraOptions: CameraOptions(
-                    center: Point(coordinates: Position(105.83991, 21.02800)).toJson(),
+                    center: Point(coordinates: Position(105.83991, 21.02800))
+                        .toJson(),
                     zoom: 14.0),
                 styleUri: MapboxStyles.DARK,
                 textureView: true,
                 onMapCreated: _onMapCreated,
               ),
             ),
-
             Container(
                 height: 120,
                 alignment: Alignment.topLeft,
@@ -343,7 +366,7 @@ void getZoom() async{
                               padding: const EdgeInsets.only(left: 12),
                               decoration:
                                   const BoxDecoration(color: Colors.white),
-                              child:  Row(
+                              child: Row(
                                 children: [
                                   const Icon(
                                     Icons.circle_outlined,
@@ -352,28 +375,32 @@ void getZoom() async{
                                   ),
                                   Expanded(
                                       child: Padding(
-                                    padding: const EdgeInsets.only(left: 8,right: 8),
+                                    padding: const EdgeInsets.only(
+                                        left: 8, right: 8),
                                     child: TextField(
                                       controller: _searchStart,
-                                   onChanged: (startText){
-                                        int currentStartLength = startText.length;
+                                      onChanged: (startText) {
+                                        int currentStartLength =
+                                            startText.length;
 
-                                     if(startText.length >=3 && startText[0] != " " && startText.contains(" ")){
-                                       setState(() {
-                                         start = startText;
-                                       });
-                                       getStart(start);
-                                     }
-                                     isShowStart= true;
-                                    if(currentStartLength != startLength){
-                                      removeLayer();
-                                      setState(() {
-                                        isHidden = true;
-                                      });
-                                    }
+                                        if (startText.length >= 3 &&
+                                            startText[0] != " " &&
+                                            startText.contains(" ")) {
+                                          setState(() {
+                                            start = startText;
+                                          });
+                                          getStart(start);
+                                        }
+                                        isShowStart = true;
+                                        if (currentStartLength != startLength) {
+                                          removeLayer();
+                                          setState(() {
+                                            isHidden = true;
+                                          });
+                                        }
                                         startLength = currentStartLength;
-                                   },
-                                      onTap: (){
+                                      },
+                                      onTap: () {
                                         getZoom();
                                       },
                                       decoration: const InputDecoration(
@@ -387,33 +414,34 @@ void getZoom() async{
                                 ],
                               )),
                           const Padding(
-                              padding:  EdgeInsets.only(top: 5, bottom: 5)),
+                              padding: EdgeInsets.only(top: 5, bottom: 5)),
                           Container(
                               padding: const EdgeInsets.only(left: 12),
                               decoration:
                                   const BoxDecoration(color: Colors.white),
                               child: Row(
                                 children: [
-                                 const Icon(
+                                  const Icon(
                                     Icons.location_on_outlined,
                                     color: Colors.blue,
                                   ),
                                   Expanded(
                                       child: Padding(
-                                    padding: const EdgeInsets.only(left: 8,right: 8),
+                                    padding: const EdgeInsets.only(
+                                        left: 8, right: 8),
                                     child: TextField(
                                       controller: _searchEnd,
-                                      onChanged: (endText){
+                                      onChanged: (endText) {
                                         int currentEndLength = endText.length;
 
-                                        if(endText.length >=3){
+                                        if (endText.length >= 3) {
                                           setState(() {
                                             end = endText;
                                           });
                                           getEnd(end);
                                         }
-                                        isShowEnd= true;
-                                        if(currentEndLength != endLength){
+                                        isShowEnd = true;
+                                        if (currentEndLength != endLength) {
                                           setState(() {
                                             isHidden = true;
                                           });
@@ -421,8 +449,7 @@ void getZoom() async{
                                         }
                                         endLength = currentEndLength;
                                       },
-
-                                      onTap: (){
+                                      onTap: () {
                                         getZoom();
                                       },
                                       decoration: const InputDecoration(
@@ -456,40 +483,69 @@ void getZoom() async{
                     )
                   ],
                 )),
-            isShowStart? Container(
-              height: 120,
-              margin: const EdgeInsets.fromLTRB(10, 75, 10, 0),
-              padding: const EdgeInsets.fromLTRB(0, 10, 0, 10),
-              decoration: const BoxDecoration(color: Colors.white),
-              child: _buildListStart(),
-            ): const Card(),
-            isShowEnd? Container(
-              height: 120,
-              margin: const EdgeInsets.fromLTRB(10, 130, 10, 0),
-              padding: const EdgeInsets.fromLTRB(0, 10, 0, 10),
-              decoration: const BoxDecoration(color: Colors.white),
-              child: _buildListEnd(),
-            ): const Card(),
-            isHidden? const Card() : Align(alignment: Alignment.bottomCenter,child: Container(
-                height: 100,
-                margin: const EdgeInsets.fromLTRB(0, 200, 0, 0),
-                padding: const EdgeInsets.fromLTRB(0, 10, 0, 10),
-                alignment: Alignment.topLeft,
-                decoration: const BoxDecoration(color: Colors.white,borderRadius: BorderRadius.only(topLeft: Radius.circular(12),topRight: Radius.circular(12))),
-                child: Padding(padding: const EdgeInsets.only(left: 16,right: 16,top: 10),child: ListView(children: [
-                  RichText(text:  TextSpan(
-                    children: [
-                      TextSpan(text: duration , style:  TextStyle(color: Colors.green[800],fontSize: 18)),
-                      TextSpan(text: ' ($distance)',style: const TextStyle(color: Colors.black87,fontSize: 18)),
-                    ]
-                  )),
-                  const Padding(padding: EdgeInsets.only(top: 8,)),
-                  const Text('Ở tình trạng giao thông hiện tại thì đây là tuyến đường nhanh nhất',style:  TextStyle(color: Colors.black54,fontSize: 16),),
-                ],),)
-            ),),
+            isShowStart
+                ? Container(
+                    height: 120,
+                    margin: const EdgeInsets.fromLTRB(10, 75, 10, 0),
+                    padding: const EdgeInsets.fromLTRB(0, 10, 0, 10),
+                    decoration: const BoxDecoration(color: Colors.white),
+                    child: _buildListStart(),
+                  )
+                : const Card(),
+            isShowEnd
+                ? Container(
+                    height: 120,
+                    margin: const EdgeInsets.fromLTRB(10, 130, 10, 0),
+                    padding: const EdgeInsets.fromLTRB(0, 10, 0, 10),
+                    decoration: const BoxDecoration(color: Colors.white),
+                    child: _buildListEnd(),
+                  )
+                : const Card(),
+            isHidden
+                ? const Card()
+                : Align(
+                    alignment: Alignment.bottomCenter,
+                    child: Container(
+                        height: 100,
+                        margin: const EdgeInsets.fromLTRB(0, 200, 0, 0),
+                        padding: const EdgeInsets.fromLTRB(0, 10, 0, 10),
+                        alignment: Alignment.topLeft,
+                        decoration: const BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.only(
+                                topLeft: Radius.circular(12),
+                                topRight: Radius.circular(12))),
+                        child: Padding(
+                          padding: const EdgeInsets.only(
+                              left: 16, right: 16, top: 10),
+                          child: ListView(
+                            children: [
+                              RichText(
+                                  text: TextSpan(children: [
+                                TextSpan(
+                                    text: duration,
+                                    style: TextStyle(
+                                        color: Colors.green[800],
+                                        fontSize: 18)),
+                                TextSpan(
+                                    text: ' ($distance)',
+                                    style: const TextStyle(
+                                        color: Colors.black87, fontSize: 18)),
+                              ])),
+                              const Padding(
+                                  padding: EdgeInsets.only(
+                                top: 8,
+                              )),
+                              const Text(
+                                'Ở tình trạng giao thông hiện tại thì đây là tuyến đường nhanh nhất',
+                                style: TextStyle(
+                                    color: Colors.black54, fontSize: 16),
+                              ),
+                            ],
+                          ),
+                        )),
+                  ),
           ],
         ));
   }
 }
-
-

@@ -4,8 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart';
 
 void main() {
-  runApp(
-      const MaterialApp(debugShowCheckedModeBanner: false, home: SafeAreaMap()));
+  runApp(const MaterialApp(
+      debugShowCheckedModeBanner: false, home: SafeAreaMap()));
 }
 
 class AnnotationClickListener extends OnPointAnnotationClickListener {
@@ -23,8 +23,6 @@ class SafeAreaMap extends StatefulWidget {
 }
 
 class FullMapState extends State<SafeAreaMap> {
-  
-  
   MapboxMap? mapboxMap;
   CircleAnnotationManager? _circleAnnotationManager;
   PointAnnotationManager? _pointAnnotationManager;
@@ -33,7 +31,6 @@ class FullMapState extends State<SafeAreaMap> {
   String searchText = "";
   _onMapCreated(MapboxMap mapboxMap) {
     this.mapboxMap = mapboxMap;
-
   }
 
   Future<void> fetchData() async {
@@ -45,14 +42,18 @@ class FullMapState extends State<SafeAreaMap> {
       var response = await http.get(url);
       // ignore: avoid_print
 
-        final jsonResponse = jsonDecode(response.body);
-        places = jsonResponse['results'] as List<dynamic>;
-        _circleAnnotationManager?.deleteAll();
+      final jsonResponse = jsonDecode(response.body);
+      places = jsonResponse['results'] as List<dynamic>;
+      _circleAnnotationManager?.deleteAll();
       _pointAnnotationManager?.deleteAll();
 // ignore: no_leading_underscores_for_local_identifiers
 
       mapboxMap?.setCamera(CameraOptions(
-          center: Point(coordinates: Position(places[0]['geometry']['location']['lng'],places[0]['geometry']['location']['lat'])).toJson(),
+          center: Point(
+                  coordinates: Position(
+                      places[0]['geometry']['location']['lng'],
+                      places[0]['geometry']['location']['lat']))
+              .toJson(),
           zoom: 12.0));
 
       mapboxMap?.flyTo(
@@ -63,31 +64,36 @@ class FullMapState extends State<SafeAreaMap> {
               pitch: 0),
           MapAnimationOptions(duration: 2000, startDelay: 0));
 
-      mapboxMap?.annotations.createCircleAnnotationManager().then((value) async {
+      mapboxMap?.annotations
+          .createCircleAnnotationManager()
+          .then((value) async {
         _circleAnnotationManager = value;
         // value.getCirclePitchScale()
-        value.create(CircleAnnotationOptions(
-          geometry: Point(
-              coordinates: Position(
-                places[0]['geometry']['location']['lng'],
-                places[0]['geometry']['location']['lat'],
-              )).toJson(),
-          circleStrokeColor: Colors.red.value,
-          circleRadius: 100.0,
-          circleOpacity: 0,
-          circleStrokeOpacity: 1.0,
-          circleStrokeWidth: 1.0,
-        ),
+        value.create(
+          CircleAnnotationOptions(
+            geometry: Point(
+                coordinates: Position(
+              places[0]['geometry']['location']['lng'],
+              places[0]['geometry']['location']['lat'],
+            )).toJson(),
+            circleStrokeColor: Colors.red.value,
+            circleRadius: 100.0,
+            circleOpacity: 0,
+            circleStrokeOpacity: 1.0,
+            circleStrokeWidth: 1.0,
+          ),
         );
       });
 
       mapboxMap?.annotations.createPointAnnotationManager().then((value) async {
         _pointAnnotationManager = value;
         value.addOnPointAnnotationClickListener(AnnotationClickListener());
-        value.create(
-            PointAnnotationOptions(
-          geometry: Point(coordinates: Position(places[0]['geometry']['location']['lng'],
-              places[0]['geometry']['location']['lat'])).toJson(),
+        value.create(PointAnnotationOptions(
+          geometry: Point(
+                  coordinates: Position(
+                      places[0]['geometry']['location']['lng'],
+                      places[0]['geometry']['location']['lat']))
+              .toJson(),
           textField: "",
           textOffset: [0.0, -2.0],
           textColor: Colors.red.value,
@@ -98,7 +104,6 @@ class FullMapState extends State<SafeAreaMap> {
           iconColor: Colors.blue.value,
         ));
       });
-
     } catch (e) {
       // ignore: avoid_print
       print('$e');
@@ -115,9 +120,7 @@ class FullMapState extends State<SafeAreaMap> {
           SizedBox(
             child: MapWidget(
               key: const ValueKey("mapWidget"),
-              resourceOptions: ResourceOptions(
-                  accessToken:
-                  "pk.eyJ1IjoibG9uZ25naGllbSIsImEiOiJjbGhyMnhwdGEyOXNmM3FzMXA5Z3U1c2VsIn0.6fGbge-wVwxzhgKFAu8pkg"),
+              resourceOptions: ResourceOptions(accessToken: "{PUBLIC_TOKENS}"),
               cameraOptions: CameraOptions(
                   center: Point(coordinates: Position(106, 21)).toJson(),
                   zoom: 5.0),
@@ -141,7 +144,7 @@ class FullMapState extends State<SafeAreaMap> {
                         Container(
                             padding: const EdgeInsets.only(left: 12),
                             decoration:
-                            const BoxDecoration(color: Colors.white),
+                                const BoxDecoration(color: Colors.white),
                             child: Row(
                               children: [
                                 const Icon(
@@ -151,21 +154,22 @@ class FullMapState extends State<SafeAreaMap> {
                                 ),
                                 Expanded(
                                     child: Padding(
-                                      padding: const EdgeInsets.only(left: 8,right: 8),
-                                      child: TextField(
-                                        onChanged: (text) {
-                                          setState(() {
-                                            searchText = text;
-                                          });
-                                        },
-                                        decoration: const InputDecoration(
-                                            hintText: "Nhập địa điểm",
-                                            border: InputBorder.none,
-                                            hintStyle: TextStyle(
-                                                color: Colors.black54,
-                                                fontSize: 16)),
-                                      ),
-                                    )),
+                                  padding:
+                                      const EdgeInsets.only(left: 8, right: 8),
+                                  child: TextField(
+                                    onChanged: (text) {
+                                      setState(() {
+                                        searchText = text;
+                                      });
+                                    },
+                                    decoration: const InputDecoration(
+                                        hintText: "Nhập địa điểm",
+                                        border: InputBorder.none,
+                                        hintStyle: TextStyle(
+                                            color: Colors.black54,
+                                            fontSize: 16)),
+                                  ),
+                                )),
                               ],
                             )),
                       ],

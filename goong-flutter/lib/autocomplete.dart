@@ -39,7 +39,7 @@ class FullMapState extends State<AutocompleteMap> {
   Future<void> fetchData(String input) async {
     try {
       final url = Uri.parse(
-          'https://rsapi.goong.io/Place/AutoComplete?api_key=qsy0OS8PcbxbmdNzOn8Gy0mSEdg4trKTgtcUD5DN&input=$input');
+          'https://rsapi.goong.io/Place/AutoComplete?api_key={YOUR_API_KEY}&input=$input');
 
       var response = await http.get(url);
 
@@ -91,7 +91,7 @@ class FullMapState extends State<AutocompleteMap> {
             });
 
             final url = Uri.parse(
-                'https://rsapi.goong.io/geocode?address=${coordinate['description']}&api_key=qsy0OS8PcbxbmdNzOn8Gy0mSEdg4trKTgtcUD5DN');
+                'https://rsapi.goong.io/geocode?address=${coordinate['description']}&api_key={YOUR_API_KEY}');
             var response = await http.get(url);
             final jsonResponse = jsonDecode(response.body);
             details = jsonResponse['results'] as List<dynamic>;
@@ -151,9 +151,7 @@ class FullMapState extends State<AutocompleteMap> {
           SizedBox(
             child: MapWidget(
               key: const ValueKey("mapWidget"),
-              resourceOptions: ResourceOptions(
-                  accessToken:
-                      "pk.eyJ1IjoibG9uZ25naGllbSIsImEiOiJjbGhyMnhwdGEyOXNmM3FzMXA5Z3U1c2VsIn0.6fGbge-wVwxzhgKFAu8pkg"),
+              resourceOptions: ResourceOptions(accessToken: "{PUBLIC_TOKENS}"),
               cameraOptions: CameraOptions(
                   center: Point(coordinates: Position(106, 21)).toJson(),
                   zoom: 5.0),

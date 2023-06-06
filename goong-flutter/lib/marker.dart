@@ -41,7 +41,7 @@ class FullMapState extends State<MarkerMap> {
     initMarker();
   }
 
-  void initMarker(){
+  void initMarker() {
     mapboxMap?.annotations.createCircleAnnotationManager().then((value) async {
       _circleAnnotationManager = value;
       for (var coordinate in Coordinates) {
@@ -60,7 +60,6 @@ class FullMapState extends State<MarkerMap> {
     });
   }
 
-
   Widget _buildListView() {
     return ListView.builder(
       itemCount: Coordinates.length,
@@ -71,9 +70,12 @@ class FullMapState extends State<MarkerMap> {
         final lat = coordinate['lat'];
 
         return ListTile(
-          onTap: (){
+          onTap: () {
             mapboxMap?.setCamera(CameraOptions(
-                center: Point(coordinates: Position(coordinate['lng'],coordinate['lat'])).toJson(),
+                center: Point(
+                        coordinates:
+                            Position(coordinate['lng'], coordinate['lat']))
+                    .toJson(),
                 zoom: 12.0));
             mapboxMap?.flyTo(
                 CameraOptions(
@@ -83,57 +85,63 @@ class FullMapState extends State<MarkerMap> {
                     pitch: 0),
                 MapAnimationOptions(duration: 2000, startDelay: 0));
           },
-          subtitle:
-         Row(
+          subtitle: Row(
             children: [
-               Container(
+              Container(
                 width: 20,
-                decoration: const BoxDecoration(
-                ),
-                child:  const Icon(Icons.location_on,size: 20),
+                decoration: const BoxDecoration(),
+                child: const Icon(Icons.location_on, size: 20),
               ),
-
               const Padding(padding: EdgeInsets.only(right: 5)),
-
               Container(
                 width: 230,
-                decoration: const BoxDecoration(
+                decoration: const BoxDecoration(),
+                child: Text(
+                  'Lat: $lat, Lng: $lng',
+                  style: const TextStyle(fontSize: 15),
                 ),
-                child: Text('Lat: $lat, Lng: $lng',style: const TextStyle(fontSize: 15),),
               ),
-
               Container(
                 width: 50,
-                decoration: const BoxDecoration(
+                decoration: const BoxDecoration(),
+                child: TextButton(
+                  onPressed: () {
+                    double a = Coordinates[index]['lng'];
+                    double b = Coordinates[index]['lat'];
+                    setState(() {
+                      isShow = false;
+                      index ==
+                          Coordinates.indexWhere((item) => item['id'] == id);
+                      Coordinates.removeAt(index);
+                      initMarker();
+                      _lng.text = a.toString();
+                      _lat.text = b.toString();
+                    });
+                    _circleAnnotationManager?.deleteAll();
+                  },
+                  child: const Text(
+                    'Edit',
+                    style: TextStyle(color: Colors.orange, fontSize: 15),
+                  ),
                 ),
-                child: TextButton(onPressed: (){
-                  double a = Coordinates[index]['lng'];
-                  double b = Coordinates[index]['lat'];
-                  setState(() {
-                    isShow = false;
-                    index == Coordinates.indexWhere((item) => item['id'] == id);
-                    Coordinates.removeAt(index);
-                    initMarker();
-                    _lng.text = a.toString();
-                    _lat.text = b.toString();
-                  });
-                  _circleAnnotationManager?.deleteAll();
-                }, child: const Text('Edit',style: TextStyle(color: Colors.orange,fontSize: 15),),),
               ),
-
               Container(
                 width: 60,
-                decoration: const BoxDecoration(
+                decoration: const BoxDecoration(),
+                child: TextButton(
+                  onPressed: () {
+                    setState(() {
+                      Coordinates.removeWhere((item) => item['id'] == id);
+                      initMarker();
+                    });
+                    _circleAnnotationManager?.deleteAll();
+                  },
+                  child: const Text('Delete',
+                      style: TextStyle(color: Colors.red, fontSize: 15)),
                 ),
-                child: TextButton(onPressed: (){
-                  setState(() {
-                    Coordinates.removeWhere((item) => item['id'] == id);
-                    initMarker();
-                  });
-                  _circleAnnotationManager?.deleteAll();
-                }, child: const Text('Delete',style: TextStyle(color: Colors.red,fontSize: 15)),),
               ),
-            ],),
+            ],
+          ),
         );
       },
     );
@@ -145,115 +153,143 @@ class FullMapState extends State<MarkerMap> {
         appBar: AppBar(
           title: const Text('Marker'),
           actions: <Widget>[
-            isShow? IconButton(
-              icon: const Icon(Icons.close),
-              onPressed: () {
-                setState(() {
-                  isShow = !isShow;
-                });
-              },
-            ) : IconButton(onPressed: (){
-              setState(() {
-                isShow = !isShow;
-              });
-            }, icon: const Icon(Icons.menu))
+            isShow
+                ? IconButton(
+                    icon: const Icon(Icons.close),
+                    onPressed: () {
+                      setState(() {
+                        isShow = !isShow;
+                      });
+                    },
+                  )
+                : IconButton(
+                    onPressed: () {
+                      setState(() {
+                        isShow = !isShow;
+                      });
+                    },
+                    icon: const Icon(Icons.menu))
           ],
         ),
         body: Stack(children: [
           SizedBox(
             child: MapWidget(
               key: const ValueKey("mapWidget"),
-              resourceOptions: ResourceOptions(
-                  accessToken:
-                      "pk.eyJ1IjoibG9uZ25naGllbSIsImEiOiJjbGhyMnhwdGEyOXNmM3FzMXA5Z3U1c2VsIn0.6fGbge-wVwxzhgKFAu8pkg"),
+              resourceOptions: ResourceOptions(accessToken: "{PUBLIC_TOKENS}"),
               cameraOptions: CameraOptions(
                   center:
                       Point(coordinates: Position(105.8342, 21.0278)).toJson(),
-                  zoom:7.0),
+                  zoom: 7.0),
               styleUri: MapboxStyles.DARK,
               textureView: true,
               onMapCreated: _onMapCreated,
-
             ),
           ),
-          if (isShow) Container(
-                  height: 130,
-                  padding: const EdgeInsets.only(top:16,bottom: 16,left:0,right:0),
-                  decoration:  BoxDecoration(color: Colors.grey[300],
-                  ),
-                  child: _buildListView(),
-                ) else Container(
-            height: 55,
-            padding: const EdgeInsets.only(top:8,bottom:8,left:0,right:0),
-            decoration:  const BoxDecoration(color: Colors.white,),
+          if (isShow)
+            Container(
+              height: 130,
+              padding:
+                  const EdgeInsets.only(top: 16, bottom: 16, left: 0, right: 0),
+              decoration: BoxDecoration(
+                color: Colors.grey[300],
+              ),
+              child: _buildListView(),
+            )
+          else
+            Container(
+              height: 55,
+              padding:
+                  const EdgeInsets.only(top: 8, bottom: 8, left: 0, right: 0),
+              decoration: const BoxDecoration(
+                color: Colors.white,
+              ),
               child: Row(
                 children: [
-                Container(
-                  margin: const EdgeInsets.only(left:12,),
-                  padding: const EdgeInsets.only(left:12,top:0,),
-                  width: 150,
-                  decoration:  BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: const BorderRadius.all(Radius.circular(5)),
-                    border: Border.all(width: 1.0, color: Colors.black38)
-                  ),
-                  child: TextField(
-                    controller: _lng,
-                    onChanged: (long){
-                      setState(() {
-                        lng =  double.parse(long);
-                      });
-                    },
-                    decoration:  const InputDecoration(
-                        hintText: "Nhập kinh độ",
-                        border: InputBorder.none,
-                        hintStyle: TextStyle(
-                            color: Colors.black54,
-                            fontSize: 16)),
-                  ),
-                ),
                   Container(
-                    margin: const EdgeInsets.only(left:12,),
-                    padding: const EdgeInsets.only(left:12,top:0,),
-                    width: 150,
-                    decoration:  BoxDecoration(
-                      color: Colors.white,
-                        borderRadius:  const BorderRadius.all(Radius.circular(5)),
-                        border: Border.all(width: 1.0, color: Colors.black38)
+                    margin: const EdgeInsets.only(
+                      left: 12,
                     ),
-                    child:  TextField(
-                      controller: _lat,
-                      onChanged: (lati){
-                      setState(() {
-                        lat = double.parse(lati);
-                      });
+                    padding: const EdgeInsets.only(
+                      left: 12,
+                      top: 0,
+                    ),
+                    width: 150,
+                    decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius:
+                            const BorderRadius.all(Radius.circular(5)),
+                        border: Border.all(width: 1.0, color: Colors.black38)),
+                    child: TextField(
+                      controller: _lng,
+                      onChanged: (long) {
+                        setState(() {
+                          lng = double.parse(long);
+                        });
                       },
-                      decoration:  const InputDecoration(
+                      decoration: const InputDecoration(
+                          hintText: "Nhập kinh độ",
+                          border: InputBorder.none,
+                          hintStyle:
+                              TextStyle(color: Colors.black54, fontSize: 16)),
+                    ),
+                  ),
+                  Container(
+                    margin: const EdgeInsets.only(
+                      left: 12,
+                    ),
+                    padding: const EdgeInsets.only(
+                      left: 12,
+                      top: 0,
+                    ),
+                    width: 150,
+                    decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius:
+                            const BorderRadius.all(Radius.circular(5)),
+                        border: Border.all(width: 1.0, color: Colors.black38)),
+                    child: TextField(
+                      controller: _lat,
+                      onChanged: (lati) {
+                        setState(() {
+                          lat = double.parse(lati);
+                        });
+                      },
+                      decoration: const InputDecoration(
                           hintText: "Nhập vĩ độ",
                           border: InputBorder.none,
-                          hintStyle: TextStyle(
-                              color: Colors.black54,
-                              fontSize: 16)),
+                          hintStyle:
+                              TextStyle(color: Colors.black54, fontSize: 16)),
                     ),
                   ),
-                  const Padding(padding: EdgeInsets.only(left:12,top:0,),),
+                  const Padding(
+                    padding: EdgeInsets.only(
+                      left: 12,
+                      top: 0,
+                    ),
+                  ),
                   ElevatedButton(
-                      onPressed: (){
-                        Map<String, dynamic> newItem = {'id': Random().nextInt(100) + (Coordinates.length +1), 'lng': lng, 'lat': lat};
-                        if(lng != null && lat != null){
+                      onPressed: () {
+                        Map<String, dynamic> newItem = {
+                          'id':
+                              Random().nextInt(100) + (Coordinates.length + 1),
+                          'lng': lng,
+                          'lat': lat
+                        };
+                        if (lng != null && lat != null) {
                           setState(() {
                             Coordinates.add(newItem);
                             initMarker();
                           });
                           _circleAnnotationManager?.deleteAll();
-                          _lng.text ="";
-                          _lat.text="";
+                          _lng.text = "";
+                          _lat.text = "";
                         }
                       },
-                      child: const Text('Tạo',style:TextStyle(color: Colors.white,fontSize: 16))),
+                      child: const Text('Tạo',
+                          style: TextStyle(color: Colors.white, fontSize: 16))),
                 ],
               ),
-          )
+            )
         ]));
   }
 }
