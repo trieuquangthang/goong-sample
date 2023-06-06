@@ -10,7 +10,6 @@ import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 
 void main() {
   runApp(const MaterialApp(debugShowCheckedModeBanner: false, home: FullMap()));
-  print('object');
 }
 
 class FullMap extends StatefulWidget {
@@ -22,13 +21,10 @@ class FullMap extends StatefulWidget {
 
 class FullMapState extends State<FullMap> {
   MapboxMap? mapboxMap;
-  // PolylinePoints polylinePoints = PolylinePoints();
   CircleAnnotationManager? _circleAnnotationManagerStart;
   CircleAnnotationManager? _circleAnnotationManagerEnd;
   _onMapCreated(MapboxMap mapboxMap) async{
     this.mapboxMap = mapboxMap;
-
-
   }
 
   String start = "";
@@ -58,18 +54,12 @@ class FullMapState extends State<FullMap> {
     try {
       final url = Uri.parse(
           'https://rsapi.goong.io/Place/AutoComplete?api_key=qsy0OS8PcbxbmdNzOn8Gy0mSEdg4trKTgtcUD5DN&input=$input');
-      // ignore: avoid_print
-      print('url $url');
       var response = await http.get(url);
-      // ignore: avoid_print
-      print(response.body);
-
       setState(() {
         final jsonResponse = jsonDecode(response.body);
         startPlace = jsonResponse['predictions'] as List<dynamic>;
         _circleAnnotationManagerStart?.deleteAll();
         isShowStart = true;
-
       });
     } catch (e) {
       // ignore: avoid_print
@@ -146,17 +136,11 @@ class FullMapState extends State<FullMap> {
     );
   }
 
-
   Future<void> getEnd(String input) async {
     try {
       final url = Uri.parse(
           'https://rsapi.goong.io/Place/AutoComplete?api_key=qsy0OS8PcbxbmdNzOn8Gy0mSEdg4trKTgtcUD5DN&input=$input');
-      // ignore: avoid_print
-      print('url $url');
       var response = await http.get(url);
-      // ignore: avoid_print
-      print(response.body);
-
       setState(() {
         final jsonResponse = jsonDecode(response.body);
         endPlace = jsonResponse['predictions'] as List<dynamic>;
@@ -252,11 +236,6 @@ void getZoom() async{
       final url = Uri.parse(
           'https://rsapi.goong.io/Direction?origin=$latStart,$lngStart&destination=$latEnd,$lngEnd&vehicle=bike&api_key=qsy0OS8PcbxbmdNzOn8Gy0mSEdg4trKTgtcUD5DN');
 
-      // ignore: no_leading_underscores_for_local_identifiers
-      // mapboxMap?.setCamera(CameraOptions(
-      //     center: Point(coordinates: Position(lngStart!,latStart!)).toJson(),
-      //     zoom: 14.0));
-
       mapboxMap?.setBounds(CameraBoundsOptions(
           bounds: CoordinateBounds(
               southwest: Point(
@@ -275,18 +254,13 @@ void getZoom() async{
           maxPitch: 10,
           minPitch: 0));
 
-
       var response = await http.get(url);
       final jsonResponse = jsonDecode(response.body);
-      // print('jsonResponse $jsonResponse');
-      // print('url $url');
       var route  = jsonResponse['routes'][0]['overview_polyline']['points'];
       duration = jsonResponse['routes'][0]['legs'][0]['duration']['text'];
       distance = jsonResponse['routes'][0]['legs'][0]['distance']['text'];
       List<PointLatLng> result = polylinePoints.decodePolyline(route);
       List<List<double>> coordinates = result.map((point) => [point.longitude, point.latitude]).toList();
-
-      // print('coordinate $coordinates');
 
       String geojson =
       '''{
@@ -305,8 +279,6 @@ void getZoom() async{
       ]
     }''';
 
-      // print('route $route');
-      // print('result $result');
       await mapboxMap?.style.addSource(GeoJsonSource(id: "line", data: geojson));
       var lineLayerJson = """{
      "type":"line",
@@ -331,7 +303,6 @@ void getZoom() async{
     await mapboxMap?.style.removeStyleLayer("line_layer");
     await mapboxMap?.style.removeStyleSource("line");
   }
-
 
   @override
   Widget build(BuildContext context) {

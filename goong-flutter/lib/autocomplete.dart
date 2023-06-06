@@ -22,7 +22,7 @@ class FullMapState extends State<AutocompleteMap> {
   final TextEditingController _searchController = TextEditingController();
   List<dynamic> details = [];
   CircleAnnotationManager? _circleAnnotationManager;
-  
+
   MapboxMap? mapboxMap;
 // ignore: non_constant_identifier_names
 
@@ -38,16 +38,10 @@ class FullMapState extends State<AutocompleteMap> {
   bool isHidden = true;
   Future<void> fetchData(String input) async {
     try {
-      // final url = Uri.parse(
-      //     'https://rsapi.goong.io/Place/AutoComplete?api_key=qsy0OS8PcbxbmdNzOn8Gy0mSEdg4trKTgtcUD5DN&input=$input');
       final url = Uri.parse(
-          'http://40.90.170.197:9999/place/autocomplete_lazada?input=$input');
+          'https://rsapi.goong.io/Place/AutoComplete?api_key=qsy0OS8PcbxbmdNzOn8Gy0mSEdg4trKTgtcUD5DN&input=$input');
 
-      // ignore: avoid_print
-      print('url $url');
       var response = await http.get(url);
-      // ignore: avoid_print
-      print(response.body);
 
       setState(() {
         final jsonResponse = jsonDecode(response.body);
@@ -55,7 +49,6 @@ class FullMapState extends State<AutocompleteMap> {
         _circleAnnotationManager?.deleteAll();
         isShow = true;
         isHidden = true;
-
       });
     } catch (e) {
       // ignore: avoid_print
@@ -78,61 +71,71 @@ class FullMapState extends State<AutocompleteMap> {
                 color: Colors.blue,
                 size: 20,
               ),
-            SizedBox(
-              width: 320,
-              child:Text(
-                coordinate['description'],
-                overflow: TextOverflow.ellipsis,
-                maxLines: 1,
-                style: const TextStyle(
-                  color: Colors.black54,
+              SizedBox(
+                width: 320,
+                child: Text(
+                  coordinate['description'],
+                  overflow: TextOverflow.ellipsis,
+                  maxLines: 1,
+                  style: const TextStyle(
+                    color: Colors.black54,
+                  ),
                 ),
-            ),)
+              )
+            ],
+          ),
+          onTap: () async {
+            setState(() {
+              isShow = false;
+              isHidden = false;
+            });
 
-          ],),onTap: ()async{
-                setState(() {
-                  isShow = false;
-                  isHidden= false;
-                });
-
-          final url = Uri.parse(
-              'https://rsapi.goong.io/geocode?address=${coordinate['description']}&api_key=qsy0OS8PcbxbmdNzOn8Gy0mSEdg4trKTgtcUD5DN');
-          var response = await http.get(url);
+            final url = Uri.parse(
+                'https://rsapi.goong.io/geocode?address=${coordinate['description']}&api_key=qsy0OS8PcbxbmdNzOn8Gy0mSEdg4trKTgtcUD5DN');
+            var response = await http.get(url);
             final jsonResponse = jsonDecode(response.body);
             details = jsonResponse['results'] as List<dynamic>;
 
-          // ignore: no_leading_underscores_for_local_identifiers
+            // ignore: no_leading_underscores_for_local_identifiers
             mapboxMap?.setCamera(CameraOptions(
-                center: Point(coordinates: Position(details[index]['geometry']['location']['lng'],details[index]['geometry']['location']['lat'])).toJson(),
+                center: Point(
+                        coordinates: Position(
+                            details[index]['geometry']['location']['lng'],
+                            details[index]['geometry']['location']['lat']))
+                    .toJson(),
                 zoom: 12.0));
 
-          mapboxMap?.flyTo(
-              CameraOptions(
-                  anchor: ScreenCoordinate(x: 0, y: 0),
-                  zoom: 15,
-                  bearing: 0,
-                  pitch: 0),
-              MapAnimationOptions(duration: 2000, startDelay: 0));
-          mapboxMap?.annotations.createCircleAnnotationManager().then((value) async {
+            mapboxMap?.flyTo(
+                CameraOptions(
+                    anchor: ScreenCoordinate(x: 0, y: 0),
+                    zoom: 15,
+                    bearing: 0,
+                    pitch: 0),
+                MapAnimationOptions(duration: 2000, startDelay: 0));
+            mapboxMap?.annotations
+                .createCircleAnnotationManager()
+                .then((value) async {
               setState(() {
-                _circleAnnotationManager = value; // Store the reference to the circle annotation manager
+                _circleAnnotationManager =
+                    value; // Store the reference to the circle annotation manager
               });
 
-            value.create(CircleAnnotationOptions(
-                geometry: Point(
-                    coordinates: Position(
-                      details[index]['geometry']['location']['lng'],
-                      details[index]['geometry']['location']['lat'],
-                    )).toJson(),
-              circleColor: Colors.blue.value,
-              circleRadius: 12.0,),
-            );
-          });
-                _searchController.text = coordinate['description'];
-                mainText = coordinate['structured_formatting']['main_text'];
-                secondText = coordinate['structured_formatting']['secondary_text'];
-
-        },
+              value.create(
+                CircleAnnotationOptions(
+                  geometry: Point(
+                      coordinates: Position(
+                    details[index]['geometry']['location']['lng'],
+                    details[index]['geometry']['location']['lat'],
+                  )).toJson(),
+                  circleColor: Colors.blue.value,
+                  circleRadius: 12.0,
+                ),
+              );
+            });
+            _searchController.text = coordinate['description'];
+            mainText = coordinate['structured_formatting']['main_text'];
+            secondText = coordinate['structured_formatting']['secondary_text'];
+          },
         );
       },
     );
@@ -157,16 +160,16 @@ class FullMapState extends State<AutocompleteMap> {
               styleUri: MapboxStyles.DARK,
               textureView: true,
               onMapCreated: _onMapCreated,
-
             ),
           ),
-          if(isShow == true) Container(
-            height: 120,
-            margin: const EdgeInsets.fromLTRB(10, 85, 10, 0),
-            padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
-            decoration: const BoxDecoration(color: Colors.white),
-            child: _buildListView(),
-          ),
+          if (isShow == true)
+            Container(
+              height: 120,
+              margin: const EdgeInsets.fromLTRB(10, 85, 10, 0),
+              padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
+              decoration: const BoxDecoration(color: Colors.white),
+              child: _buildListView(),
+            ),
           Container(
               height: 70,
               alignment: Alignment.topLeft,
@@ -192,18 +195,19 @@ class FullMapState extends State<AutocompleteMap> {
                                 ),
                                 Expanded(
                                     child: Padding(
-                                  padding: const EdgeInsets.only(left: 4,right: 8),
+                                  padding:
+                                      const EdgeInsets.only(left: 4, right: 8),
                                   child: TextField(
                                     controller: _searchController,
                                     onChanged: (text) {
                                       // print('First text field: $text');
-                                        if(text != null){
-                                          setState(() {
-                                            searchText = text;
-                                          });
-                                          fetchData(text);
-                                        }
-                                        isHidden = true;
+                                      if (text != null) {
+                                        setState(() {
+                                          searchText = text;
+                                        });
+                                        fetchData(text);
+                                      }
+                                      isHidden = true;
                                     },
                                     decoration: const InputDecoration(
                                         hintText: "Nhập địa điểm",
@@ -213,7 +217,6 @@ class FullMapState extends State<AutocompleteMap> {
                                             fontSize: 16)),
                                   ),
                                 )),
-
                               ],
                             )),
                       ],
@@ -221,19 +224,40 @@ class FullMapState extends State<AutocompleteMap> {
                   ),
                 ],
               )),
-          isHidden? const Card() : Align(alignment: Alignment.bottomCenter,child: Container(
-            height: 120,
-            margin: const EdgeInsets.fromLTRB(0, 200, 0, 0),
-            padding: const EdgeInsets.fromLTRB(0, 10, 0, 10),
-            alignment: Alignment.topLeft,
-            decoration: const BoxDecoration(color: Colors.white,borderRadius: BorderRadius.only(topLeft: Radius.circular(12),topRight: Radius.circular(12))),
-            child: Padding(padding: const EdgeInsets.only(left: 16,right: 16,top: 10),child: ListView(children: [
-              Text(mainText,style: const TextStyle(color: Colors.black,fontSize: 18),),
-              const Padding(padding: EdgeInsets.only(top: 12)),
-              Text(secondText,style: const TextStyle(color: Colors.black54,fontSize: 15),)
-            ],),)
-          ),),
-
+          isHidden
+              ? const Card()
+              : Align(
+                  alignment: Alignment.bottomCenter,
+                  child: Container(
+                      height: 120,
+                      margin: const EdgeInsets.fromLTRB(0, 200, 0, 0),
+                      padding: const EdgeInsets.fromLTRB(0, 10, 0, 10),
+                      alignment: Alignment.topLeft,
+                      decoration: const BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.only(
+                              topLeft: Radius.circular(12),
+                              topRight: Radius.circular(12))),
+                      child: Padding(
+                        padding:
+                            const EdgeInsets.only(left: 16, right: 16, top: 10),
+                        child: ListView(
+                          children: [
+                            Text(
+                              mainText,
+                              style: const TextStyle(
+                                  color: Colors.black, fontSize: 18),
+                            ),
+                            const Padding(padding: EdgeInsets.only(top: 12)),
+                            Text(
+                              secondText,
+                              style: const TextStyle(
+                                  color: Colors.black54, fontSize: 15),
+                            )
+                          ],
+                        ),
+                      )),
+                ),
         ]));
   }
 }

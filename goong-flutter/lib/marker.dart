@@ -89,7 +89,6 @@ class FullMapState extends State<MarkerMap> {
                Container(
                 width: 20,
                 decoration: const BoxDecoration(
-                  // color: Colors.green,
                 ),
                 child:  const Icon(Icons.location_on,size: 20),
               ),
@@ -99,7 +98,6 @@ class FullMapState extends State<MarkerMap> {
               Container(
                 width: 230,
                 decoration: const BoxDecoration(
-                  // color: Colors.green,
                 ),
                 child: Text('Lat: $lat, Lng: $lng',style: const TextStyle(fontSize: 15),),
               ),
@@ -107,10 +105,8 @@ class FullMapState extends State<MarkerMap> {
               Container(
                 width: 50,
                 decoration: const BoxDecoration(
-                  // color: Colors.green,
                 ),
                 child: TextButton(onPressed: (){
-                  // int i =
                   double a = Coordinates[index]['lng'];
                   double b = Coordinates[index]['lat'];
                   setState(() {
@@ -122,14 +118,12 @@ class FullMapState extends State<MarkerMap> {
                     _lat.text = b.toString();
                   });
                   _circleAnnotationManager?.deleteAll();
-                  print('index $index');
                 }, child: const Text('Edit',style: TextStyle(color: Colors.orange,fontSize: 15),),),
               ),
 
               Container(
                 width: 60,
                 decoration: const BoxDecoration(
-                  // color: Colors.green,
                 ),
                 child: TextButton(onPressed: (){
                   setState(() {
@@ -137,13 +131,9 @@ class FullMapState extends State<MarkerMap> {
                     initMarker();
                   });
                   _circleAnnotationManager?.deleteAll();
-                  print(Coordinates);
                 }, child: const Text('Delete',style: TextStyle(color: Colors.red,fontSize: 15)),),
               ),
-
-
             ],),
-
         );
       },
     );
@@ -157,7 +147,6 @@ class FullMapState extends State<MarkerMap> {
           actions: <Widget>[
             isShow? IconButton(
               icon: const Icon(Icons.close),
-              // tooltip: 'Show Snackbar',
               onPressed: () {
                 setState(() {
                   isShow = !isShow;
@@ -259,7 +248,6 @@ class FullMapState extends State<MarkerMap> {
                           _circleAnnotationManager?.deleteAll();
                           _lng.text ="";
                           _lat.text="";
-                          // print('hello world $newItem');
                         }
                       },
                       child: const Text('Tạo',style:TextStyle(color: Colors.white,fontSize: 16))),
